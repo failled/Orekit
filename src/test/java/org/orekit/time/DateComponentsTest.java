@@ -17,6 +17,8 @@
 package org.orekit.time;
 
 
+import java.time.LocalDate;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -206,6 +208,32 @@ public class DateComponentsTest {
         Assert.assertEquals(      59, DateComponents.parseDate("2000-02-29").getJ2000Day());
         Assert.assertEquals(      60, DateComponents.parseDate("20000301").getJ2000Day());
         Assert.assertEquals(      60, DateComponents.parseDate("2000-03-01").getJ2000Day());
+    }
+    
+    @Test
+    public void testFromLocalDate() {
+        DateComponents date = DateComponents.from(LocalDate.of(1600, 3, 1));
+        Assert.assertEquals(1600, date.getYear());
+        Assert.assertEquals(3, date.getMonth());
+        Assert.assertEquals(1, date.getDay());
+        
+        date = DateComponents.from(LocalDate.of(2000, 2, 29));
+        Assert.assertEquals(2000, date.getYear());
+        Assert.assertEquals(2, date.getMonth());
+        Assert.assertEquals(29, date.getDay());
+    }
+    
+    @Test
+    public void testToLocalDate() {
+        LocalDate date = new DateComponents(1600, 3, 1).toLocalDate();
+        Assert.assertEquals(1600, date.getYear());
+        Assert.assertEquals(3, date.getMonth());
+        Assert.assertEquals(1, date.getDayOfMonth());
+        
+        date = new DateComponents(2000, 2, 29).toLocalDate();
+        Assert.assertEquals(2000, date.getYear());
+        Assert.assertEquals(2, date.getMonth());
+        Assert.assertEquals(29, date.getDayOfMonth());
     }
 
     @Test

@@ -17,6 +17,12 @@
 package org.orekit.time;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalField;
 
 import org.hipparchus.util.FastMath;
 import org.orekit.utils.Constants;
@@ -255,6 +261,38 @@ public class DateTimeComponents implements Serializable, Comparable<DateTimeComp
         }
         return date.toString() + 'T' + time.toString();
     }
-
+    
+    public static DateTimeComponents from(LocalDateTime dateTime_) {
+        double seconds = dateTime_.getSecond() + dateTime_.getNano() / 1E9; 
+        return new DateTimeComponents(
+                dateTime_.getYear(), 
+                dateTime_.getMonthValue(), 
+                dateTime_.getDayOfMonth(),
+                dateTime_.getHour(),
+                dateTime_.getMinute(),
+                seconds);
+    }
+    
+    public static DateTimeComponents from(ZonedDateTime dateTime_) {
+        double seconds = dateTime_.getSecond() + dateTime_.getNano() / 1E9; 
+        return new DateTimeComponents(
+                dateTime_.getYear(), 
+                dateTime_.getMonthValue(), 
+                dateTime_.getDayOfMonth(),
+                dateTime_.getHour(),
+                dateTime_.getMinute(),
+                seconds);
+    }
+    
+    public static DateTimeComponents from(OffsetDateTime dateTime_) {
+        double seconds = dateTime_.getSecond() + dateTime_.getNano() / 1E9; 
+        return new DateTimeComponents(
+                dateTime_.getYear(), 
+                dateTime_.getMonthValue(), 
+                dateTime_.getDayOfMonth(),
+                dateTime_.getHour(),
+                dateTime_.getMinute(),
+                seconds);
+    }
 }
 

@@ -17,6 +17,10 @@
 package org.orekit.time;
 
 
+import java.time.LocalTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -126,6 +130,56 @@ public class TimeComponentsTest {
         Assert.assertEquals(86399.9, TimeComponents.parseTime("23:59:59.900+00:00").getSecondsInLocalDay(), 1.0e-10);
         Assert.assertEquals(86340.0, TimeComponents.parseTime("23:59").getSecondsInLocalDay(), 1.0e-10);
     }
+    
+    @Test
+    public void testFromLocalTime() {
+        Assert.assertEquals(0.000_123_456, TimeComponents.from(LocalTime.of(00, 00, 00, 123456)).getSecondsInLocalDay(), 1.0e-10);
+        Assert.assertEquals(86399.987654321, TimeComponents.from(LocalTime.of(23, 59, 59, 987_654_321)).getSecondsInLocalDay(), 1.0e-10);
+    }
+    
+    @Test
+    public void testToLocalTime() {
+        LocalTime time = new TimeComponents(0, 0, 0.000123456).toLocalTime();
+        Assert.assertEquals(0, time.getHour());
+        Assert.assertEquals(0, time.getMinute());
+        Assert.assertEquals(0, time.getSecond());
+        Assert.assertEquals(123456, time.getNano());
+        
+        time = new TimeComponents(23, 59, 59.987654321).toLocalTime();
+        Assert.assertEquals(23, time.getHour());
+        Assert.assertEquals(59, time.getMinute());
+        Assert.assertEquals(59, time.getSecond());
+        Assert.assertEquals(987654321, time.getNano());
+    }
+    
+    @Test
+    public void testFromOffsetTime() {
+        TimeComponents time = TimeComponents.from(OffsetTime.of(0, 0, 0, 123456, ZoneOffset.ofHoursMinutes(1, 1)));
+        Assert.assertEquals(0.000_123_456, time.getSecondsInLocalDay(), 1.0e-10);
+        Assert.assertEquals(61, time.getMinutesFromUTC());
+        
+        time = TimeComponents.from(OffsetTime.of(23, 59, 59, 999_999_999, ZoneOffset.ofHoursMinutes(6, 59)));
+        Assert.assertEquals(86399.999_999_999, time.getSecondsInLocalDay(), 1.0e-10);
+        Assert.assertEquals(419, time.getMinutesFromUTC());
+    }
+    
+    @Test
+    public void testToOffsetTime() {
+        OffsetTime time = new TimeComponents(0, 0, 0.000123456, 72).toOffsetTime();
+        Assert.assertEquals(0, time.getHour());
+        Assert.assertEquals(0, time.getMinute());
+        Assert.assertEquals(0, time.getSecond());
+        Assert.assertEquals(123456, time.getNano());
+        Assert.assertEquals(72*60, time.getOffset().getTotalSeconds());
+        
+        time = new TimeComponents(23, 59, 59.987654321, 419).toOffsetTime();
+        Assert.assertEquals(23, time.getHour());
+        Assert.assertEquals(59, time.getMinute());
+        Assert.assertEquals(59, time.getSecond());
+        Assert.assertEquals(987654321, time.getNano());
+        Assert.assertEquals(419*60, time.getOffset().getTotalSeconds());
+    }
+
 
     @Test(expected=IllegalArgumentException.class)
     public void testBadFormat() {

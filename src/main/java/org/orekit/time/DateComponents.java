@@ -18,6 +18,7 @@ package org.orekit.time;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -337,6 +338,26 @@ public class DateComponents implements Serializable, Comparable<DateComponents> 
 
         throw new OrekitIllegalArgumentException(OrekitMessages.NON_EXISTENT_DATE, string);
 
+    }
+    
+    /**
+     * Builds a DateComponents from a LocalDate
+     * @param time_
+     * @return
+     */
+    public static DateComponents from(LocalDate time_) {
+        return new DateComponents(
+                time_.getYear(), 
+                time_.getMonthValue(), 
+                time_.getDayOfMonth());
+    }
+    
+    /**
+     * Convert the instance to a {@link java.time.LocalDate LocalDate}
+     * @return
+     */
+    public LocalDate toLocalDate() {
+        return LocalDate.of(year, month, day);
     }
 
     /** Get the year number.

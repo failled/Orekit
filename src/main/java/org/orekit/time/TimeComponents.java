@@ -19,6 +19,9 @@ package org.orekit.time;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -219,6 +222,29 @@ public class TimeComponents implements Serializable, Comparable<TimeComponents> 
         throw new OrekitIllegalArgumentException(OrekitMessages.NON_EXISTENT_TIME, string);
 
     }
+    
+    public static TimeComponents from(LocalTime time_) {
+        return new TimeComponents(
+                time_.getHour(), 
+                time_.getMinute(), 
+                time_.getSecond() + time_.getNano() / 1E09);
+    }
+    
+    public static TimeComponents from(OffsetTime time_) {
+        return new TimeComponents(
+                time_.getHour(), 
+                time_.getMinute(), 
+                time_.getSecond() + time_.getNano() / 1E09,
+                time_.getOffset().getTotalSeconds() / 60);
+    }
+    
+    public LocalTime toLocalTime() {
+        return LocalTime.of(hour, minute, (int)second, (int) ((second - ((int)second)) * 1E09));
+    }
+    
+    public OffsetTime toOffsetTime() {
+        return OffsetTime.of(toLocalTime(), ZoneOffset.ofTotalSeconds(minutesFromUTC*60));
+    }
 
     /** Get the hour number.
      * @return hour number from 0 to 23
@@ -313,5 +339,5 @@ public class TimeComponents implements Serializable, Comparable<TimeComponents> 
         final long bits = Double.doubleToLongBits(second);
         return ((hour << 16) ^ ((minute - minutesFromUTC) << 8)) ^ (int) (bits ^ (bits >>> 32));
     }
-
+    
 }
